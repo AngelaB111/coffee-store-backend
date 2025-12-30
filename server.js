@@ -5,14 +5,19 @@ app.use(express.json());
 app.use(cors());  
 const bcrypt = require("bcryptjs");
 const mysql =require("mysql2"); 
-
+const PORT = process.env.PORT || 5000;
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "coffee-store",
+// });
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "coffee-store",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "coffee-store",
 });
-
 
 db.connect((err)=>{ 
 if (err) { 
@@ -275,7 +280,6 @@ app.post("/contact", (req, res) => {
 //   console.log("Connected to backend.");
 
 // });
-const PORT = process.env.PORT || 10000; 
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
