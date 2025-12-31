@@ -34,26 +34,6 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
-db.query("SELECT 1", (err) => {
-  if (err) console.error("DB CONNECTION FAILED:", err);
-  else console.log("MySQL connected successfully");
-});
-
-
-
-app.get("/health", (req, res) => {
-  res.json({
-    host: !!process.env.DB_HOST,
-    port: !!process.env.DB_PORT,
-    user: !!process.env.DB_USER,
-    db: !!process.env.DB_NAME
-  });
-});
-
-
-
-
-
 
 app.get('/items',(req ,res)=>
 {
