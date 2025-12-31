@@ -74,22 +74,39 @@ app.get('/items/details',(req ,res)=>
   return res.json(data);
  })
 });
-
 app.get("/items/related/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const limit = parseInt(req.query.limit) || 3;
+
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid ID provided" });
-    }const [products] = await db.promise().query(
-  "SELECT  i.item_id, i.name, i.category, i.description, i.image, d.price FROM items i INNER JOIN details d ON i.item_id = d.item_id  WHERE i.item_id != ? GROUP BY i.item_id ORDER BY RAND() LIMIT ?",
-  [id, limit] ); 
+    }
+
+    const [products] = await db.promise().query(
+      `SELECT 
+         i.item_id, 
+         MAX(i.name) AS name, 
+         MAX(i.category) AS category,
+         MAX(i.description) AS description, 
+         MAX(i.image) AS image, 
+         MAX(d.price) AS price
+       FROM items i 
+       INNER JOIN details d ON i.item_id = d.item_id  
+       WHERE i.item_id != ? 
+       GROUP BY i.item_id 
+       ORDER BY RAND() 
+       LIMIT ?`,
+      [id, limit]
+    );
+
     res.json(products);
   } catch (err) {
     console.error("FULL ERROR DETAILS:", err);
     res.status(500).json({ error: "Database query failed", message: err.message });
   }
 });
+
 
 
 app.get('/items/detail/:identifier', (req, res) => {
