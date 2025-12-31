@@ -7,21 +7,6 @@ const bcrypt = require("bcryptjs");
 const mysql =require("mysql2"); 
 require("dotenv").config();
 
-// const PORT = process.env.PORT || 5000;
-
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "coffee-store",
-// });
-// db.connect((err)=>{ 
-// if (err) { 
-//     console.error("error connecting to db ", err) ; 
-//     return ; 
-// }
-// console.log("connected to db");
-// });
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -227,12 +212,6 @@ app.post("/contact", (req, res) => {
   });
 });
 
-
-// app.listen(5000, () => {
-
-//   console.log("Connected to backend.");
-
-// });
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
