@@ -8,19 +8,32 @@ const mysql =require("mysql2");
 
 // const PORT = process.env.PORT || 5000;
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "coffee-store",
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "coffee-store",
+// });
+// db.connect((err)=>{ 
+// if (err) { 
+//     console.error("error connecting to db ", err) ; 
+//     return ; 
+// }
+// console.log("connected to db");
+// });
+const db = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  waitForConnections: true,
+  connectionLimit: 10
 });
-db.connect((err)=>{ 
-if (err) { 
-    console.error("error connecting to db ", err) ; 
-    return ; 
-}
-console.log("connected to db");
-});
+
 
 // require('dotenv').config(); 
 
@@ -219,12 +232,13 @@ app.post("/contact", (req, res) => {
 });
 
 
-app.listen(5000, () => {
+// app.listen(5000, () => {
 
-  console.log("Connected to backend.");
+//   console.log("Connected to backend.");
 
-});
-
-// app.listen(PORT, '0.0.0.0', () => {
-//     console.log(`Server is running on port ${PORT}`);
 // });
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
