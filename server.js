@@ -212,6 +212,49 @@ app.post("/contact", (req, res) => {
   });
 });
 
+app.delete("/auth/delete/:id", (req, res) => {
+  const userId = req.params.id;
+
+  const q = "DELETE FROM users WHERE user_id = ?";
+
+  db.query(q, [userId], (err, result) => {
+    if (err) {
+      console.error("DELETE ERROR:", err);
+      return res.status(500).json({ message: "Database error during deletion" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Account deleted successfully" });
+  });
+}); 
+
+app.put("/auth/update/:id", (req, res) => {
+  const userId = req.params.id;
+  const { name, email } = req.body;
+
+  
+  if (!name || !email) {
+    return res.status(400).json({ message: "Name and email are required" });
+  }
+
+  const q = "UPDATE users SET name = ?, email = ? WHERE user_id = ?";
+
+  db.query(q, [name, email, userId], (err, result) => {
+    if (err) {
+      console.error("UPDATE ERROR:", err);
+      return res.status(500).json({ message: "Database error during update" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  });
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
