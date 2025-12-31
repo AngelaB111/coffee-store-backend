@@ -5,6 +5,7 @@ app.use(express.json());
 app.use(cors());  
 const bcrypt = require("bcryptjs");
 const mysql =require("mysql2"); 
+require("dotenv").config();
 
 // const PORT = process.env.PORT || 5000;
 
@@ -33,24 +34,22 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
+db.query("SELECT 1", (err) => {
+  if (err) console.error("DB CONNECTION FAILED:", err);
+  else console.log("MySQL connected successfully");
+});
 
 
-// require('dotenv').config(); 
 
-// const db = mysql.createConnection({
-//   host: process.env.MYSQLHOST,     
-//   user: process.env.MYSQLUSER,    
-//   password: process.env.MYSQLPASSWORD, 
-//   database: process.env.MYSQLDATABASE, 
-//   port: process.env.MYSQLPORT     
-// });
-// db.connect((err) => {
-//   if (err) {
-//     console.error('Error connecting to Railway:', err.message);
-//     return;
-//   }
-//   console.log('Successfully connected to the Railway MySQL database!');
-// });
+app.get("/health", (req, res) => {
+  res.json({
+    host: !!process.env.DB_HOST,
+    port: !!process.env.DB_PORT,
+    user: !!process.env.DB_USER,
+    db: !!process.env.DB_NAME
+  });
+});
+
 
 
 
