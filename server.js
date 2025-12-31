@@ -7,37 +7,39 @@ const bcrypt = require("bcryptjs");
 const mysql =require("mysql2"); 
 
 // const PORT = process.env.PORT || 5000;
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "coffee-store",
-// });
-
-require('dotenv').config(); 
 
 const db = mysql.createConnection({
-  host: process.env.MYSQLHOST,     
-  user: process.env.MYSQLUSER,    
-  password: process.env.MYSQLPASSWORD, 
-  database: process.env.MYSQLDATABASE, 
-  port: process.env.MYSQLPORT     
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "coffee-store",
 });
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to Railway:', err.message);
-    return;
-  }
-  console.log('Successfully connected to the Railway MySQL database!');
+db.connect((err)=>{ 
+if (err) { 
+    console.error("error connecting to db ", err) ; 
+    return ; 
+}
+console.log("connected to db");
 });
 
-// db.connect((err)=>{ 
-// if (err) { 
-//     console.error("error connecting to db ", err) ; 
-//     return ; 
-// }
-// console.log("connected to db");
+// require('dotenv').config(); 
+
+// const db = mysql.createConnection({
+//   host: process.env.MYSQLHOST,     
+//   user: process.env.MYSQLUSER,    
+//   password: process.env.MYSQLPASSWORD, 
+//   database: process.env.MYSQLDATABASE, 
+//   port: process.env.MYSQLPORT     
 // });
+// db.connect((err) => {
+//   if (err) {
+//     console.error('Error connecting to Railway:', err.message);
+//     return;
+//   }
+//   console.log('Successfully connected to the Railway MySQL database!');
+// });
+
+
 
 
 
@@ -142,30 +144,33 @@ app.get('/items/:id',(req ,res)=>
   });
 });
 
-
 app.post("/auth/signup", async (req, res) => {
   const { name, email, password } = req.body;
-
   if (!name || !email || !password) {
     return res.status(400).json({ message: "All fields required" });
   }
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const q =
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-
+    const q = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
     db.query(q, [name, email, hashedPassword], (err) => {
       if (err) {
-        return res.status(400).json({ message: "Email already exists" });
+        console.error("SIGNUP ERROR DETAILS:", err);
+       if (err) {
+  console.error("FULL MYSQL ERROR:", err);
+  return res.status(400).json({ message: err.sqlMessage });
+
+        }
+        return res.status(500).json({ message: "Database error: " + err.code });
       }
       res.status(201).json({ message: "Account created" });
     });
   } catch (err) {
+    console.error("HASHING ERROR:", err);
     res.status(500).json({ message: "Signup failed" });
   }
 });
+
+
 app.post("/auth/login", (req, res) => {
   const { email, password } = req.body;
 
