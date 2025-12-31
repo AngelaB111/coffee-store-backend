@@ -90,30 +90,18 @@ app.get("/items/related/:id", async (req, res) => {
     res.status(500).json({ error: "Database query failed", message: err.message });
   }
 });
-app.get('/items/related/:currentId', (req, res) => {
-  const currentId = req.params.currentId;
-  const limit = parseInt(req.query.limit) || 3;
 
-  // Select random related products, grouping properly to satisfy ONLY_FULL_GROUP_BY
-  const q = `
-    SELECT i.item_id, i.name, i.image, MAX(d.price) AS price
-    FROM items i
-    JOIN details d ON i.item_id = d.item_id
-    WHERE i.item_id != ?
-      AND d.size = 'Small'
-    GROUP BY i.item_id, i.name, i.image
-    ORDER BY RAND()
-    LIMIT ?
-  `;
 
-  db.query(q, [currentId, limit], (err, data) => {
-    if (err) {
-      console.error("Database Error:", err);
-      return res.status(500).json({ error: "Database query failed", message: err.sqlMessage });
-    }
-    return res.json(data);
+app.get('/items/detail/:identifier', (req, res) => {
+  const identifier = req.params.identifier;
+  const q =     "SELECT i.item_id, i.name, i.category, i.description, i.image, d.price  FROM items i  INNER JOIN details d ON i.item_id = d.item_id  WHERE (i.item_id = ? OR i.name = ?) AND d.size = 'Small'  LIMIT 1";
+  db.query(q, [identifier, identifier], (err, data) => {
+    if (err) return res.status(500).json(err);
+    if (data.length === 0) return res.status(440).json("Product not found");
+    return res.json(data[0]); 
   });
 });
+
 
 
 app.get('/items/details/:category',(req ,res)=>
