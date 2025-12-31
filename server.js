@@ -183,7 +183,7 @@ app.post("/auth/login", (req, res) => {
 
     res.json({
       user: {
-        id: user.user_id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },
