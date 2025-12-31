@@ -215,7 +215,7 @@ app.post("/contact", (req, res) => {
 app.delete("/auth/delete/:id", (req, res) => {
   const userId = req.params.id;
 
-  const q = "DELETE FROM users WHERE user_id = ?";
+  const q = "DELETE FROM users WHERE id = ?";
 
   db.query(q, [userId], (err, result) => {
     if (err) {
@@ -240,7 +240,7 @@ app.put("/auth/update/:id", (req, res) => {
     return res.status(400).json({ message: "Name and email are required" });
   }
 
-  const q = "UPDATE users SET name = ?, email = ? WHERE user_id = ?";
+  const q = "UPDATE users SET name = ?, email = ? WHERE id = ?";
 
   db.query(q, [name, email, userId], (err, result) => {
     if (err) {
