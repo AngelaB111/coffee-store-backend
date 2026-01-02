@@ -6,6 +6,8 @@ app.use(cors());
 const bcrypt = require("bcryptjs");
 const mysql =require("mysql2"); 
 require("dotenv").config();
+const path = require("path");
+app.use(express.static(path.join(__dirname, "images")));
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
